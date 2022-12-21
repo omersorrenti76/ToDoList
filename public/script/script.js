@@ -41,7 +41,7 @@ addTodo.addEventListener('click', function(){
     }
 });
 
-//pressing Enter key to add an item
+//pressing Enter key to add an item - non funzionaaaa
 addTodo.addEventListener('keypress', function(event){
     if(event.key === "Enter"){
         event.preventDefault();
@@ -55,6 +55,28 @@ function darkMode()
     var element1 = document.body;
     element1.classList.toggle("darkmode");
 
-    var element2 = document.body;
-    element2.classList.toggle("list-group");
+    //non funzionaaa
+    var element2 = document.body.li;
+    element2.classList.toggle("darkmode");
+}
+
+
+
+
+function GetRandomItem()
+{
+    var limit = 1;
+    $.ajax({
+        method: 'GET',
+        url: 'https://api.api-ninjas.com/v1/facts?limit=' + limit,
+        headers: { 'X-Api-Key': 'N1Pj2m09VHoX7fwJa9JxAw==lczET40O9sNCT0N9'},
+        contentType: 'application/json',
+        success: function(result) {
+            console.log(result);
+            document.getElementById('fact').innerText=result[0].fact;
+        },
+        error: function ajaxError(jqXHR) {
+            console.error('Error: ', jqXHR.responseText);
+        }
+    });
 }

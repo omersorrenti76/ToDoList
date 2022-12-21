@@ -14,6 +14,9 @@ const flash = require('express-flash');
 const session = require('express-session');
 const methodOverride = require('method-override');
 const initializePassport = require('./passport-config');
+const sqlite3 = require('sqlite3').verbose();
+const dbcontext = require('./dbcontext.js');
+
 
 initializePassport(
     passport,
@@ -25,11 +28,13 @@ initializePassport(
 //const users = [];       //storing data in a local array variable
 
 //database setup
-const mongoose = require("mongoose");
+/*const mongoose = require("mongoose");
 mongoose.set('strictQuery', true);
 mongoose.connect("mongodb+srv://pachokx72:alyaiiDhDDSXjAL5@cluster0.1wb2n5n.mongodb.net/?retryWrites=true&w=majority")
     .then(() => console.log("Database connected!"))
-    .catch(err => console.log(err));
+    .catch(err => console.log(err));*/
+
+
 
 
 app.set('view-engine', 'ejs');      //tell the server we're using ejs and its syntax
@@ -66,6 +71,11 @@ app.post('/login', checkNotAuthenticated, passport.authenticate('local', {
 
 app.post('/register', checkNotAuthenticated, async (req, res) => {         //asyncronous function
     try{
+        console.log('entro in register');
+
+        dbcontext.GetUserFromEmail("pippo@pippop.it");
+
+         /*
         const hashedPassword = await bcrypt.hash(req.body.password, 10);        //asyncronous hashing of password, 10 is a solid standard encryption value
         const User = require('./userModel.js');
 
@@ -77,7 +87,7 @@ app.post('/register', checkNotAuthenticated, async (req, res) => {         //asy
 
         newUser.save().then(() => console.log("Saved new user"));
 
-        /*
+       
         users.push({
             id: Date.now().toString(),      //automatically generated in a database
             name: req.body.name,
