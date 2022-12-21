@@ -1,0 +1,51 @@
+<html>
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>To Do List</title>
+       
+         <!-- se lo includi ti permette di usare jquery come selettore es $("#IDelemento") 
+        guarda questo link è molto potente e usato  https://jquery.com/  -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+       
+        <!--CSS-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+
+        <!-- se lo includi ti permette di usare un seti di icone fontawesome https://fontawesome.com/v5/search/ -->
+        <link href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" rel="stylesheet" type="text/css">
+        
+        <link href="css/style.css" rel="stylesheet" type="text/css">
+    </head>
+
+    <body>
+        <header>
+            <div class="top-text">
+                <a>The simplest To Do List of all time</a>
+                <button id="darkmodeButton" type="button" onclick="darkMode()">Dark/Light</button>
+            </div>
+        </header>
+
+        <div class="top-container">
+            <h1><%= email %>'s To Do List</h1>
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Write something..." aria-describedby="button-addon2" id="txt-todo-name">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" id="add-item">Add Item</button>
+                </div>
+            </div>
+            <div class="listholderstyle">
+                <ul class="list-group list-group-flush" id="list-holder"></ul>
+            </div>
+        </div>
+
+        <footer>
+            <form id="logout-btn" action="/logout?_method=DELETE" method="POST">
+                <button type="submit">Log Out</button>
+            </form>
+        </footer>
+
+        <script src="script/script.js"></script>
+    </body>
+
+</html>

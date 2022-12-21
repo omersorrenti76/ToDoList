@@ -1,0 +1,111 @@
+body
+{
+    background-color: #B9D8C2; 
+    color: #4A5043;        
+}
+
+h1
+{
+    text-align: center;
+    margin-top: 50px;
+}
+
+footer{
+    text-align: center;
+    padding-top: 20px;
+}
+
+.form-box{
+    margin-top: 20px;
+    text-align: center;
+    margin-left: 15%;
+    margin-right: 15%;
+    border-top-width: 1px;
+    border-top-style: solid;
+    border-color: #4A5043;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    padding-top: 10px;
+}
+
+.credentials{
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.credentials-input{
+    margin-bottom: 10px;
+}
+
+.top-text
+{
+    text-align: center;
+    margin-top: 20px;
+}
+
+.input-group
+{
+    margin-top: 50px;
+    padding-left: 100px;
+    padding-right: 100px;
+    border-color: #4A5043;
+}
+
+.form-control
+{
+    border-color: #8AA1B1;    
+}
+
+.btn
+{
+    background-color: #8AA1B1;     
+    color: white;
+}
+
+.list-group-item
+{
+    cursor: pointer;
+    background-color: #B9D8C2;  
+    color: #4A5043;            
+}
+
+.darkmodeButton
+{
+    border-style: solid;
+    border-radius: 5px;
+    border-width: 1px;
+    border-color: #4A5043;
+    position: absolute;
+    right: 5%;
+}
+
+.done
+{
+    text-decoration: line-through;
+    color: grey;
+}
+
+.darkmode       /*inverting background and text colors*/
+{
+    background-color: #4A5043;  
+    color: #B9D8C2
+}
+
+.list-group
+{
+    background-color: #4A5043;
+    color: #B9D8C2;
+}
+
+.listholderstyle{
+    margin-top: 50px;
+    padding-left: 100px;
+    padding-right: 100px;
+    margin-top: 20px;
+    text-align: left;
+}
+
+#logout-btn{
+    position: absolute;
+    left: 50%;
+}
