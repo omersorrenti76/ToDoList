@@ -8,34 +8,22 @@ if(process.env.NODE_ENV !== 'production'){
 //libraries
 const express = require('express');
 const app = express();
+const crypto = require('crypto'); 
 const bcrypt = require('bcrypt');       //using bcrypt library to hash passwords
-const passport = require('passport');       //using passport library to handle login operations
 const flash = require('express-flash');
 const session = require('express-session');
 const methodOverride = require('method-override');
 const initializePassport = require('./passport-config');
 const sqlite3 = require('sqlite3').verbose();
-const dbcontext = require('./dbcontext.js');
+const LocalStrategy = require('passport-local').Strategy;
 
-
-initializePassport(
-    passport,
-    email => users.find(user => user.email === email),       //find user based on the email
-    id => users.find(user => user.id === id)
-);
-
-//FARE IL DATABESE CON NODE/MONGO
-//const users = [];       //storing data in a local array variable
-
-//database setup
-/*const mongoose = require("mongoose");
-mongoose.set('strictQuery', true);
-mongoose.connect("mongodb+srv://pachokx72:alyaiiDhDDSXjAL5@cluster0.1wb2n5n.mongodb.net/?retryWrites=true&w=majority")
-    .then(() => console.log("Database connected!"))
-    .catch(err => console.log(err));*/
+var dbcontext = require('./dbcontext.js');
+let loggedUser = require('./dbcontext.js');
 
 
 
+// creating 24 hours from milliseconds
+const oneDay = 1000 * 60 * 60 * 24;
 
 app.set('view-engine', 'ejs');      //tell the server we're using ejs and its syntax
 app.use(express.urlencoded({extended: false}));     //telling app to take forms and access to them via request variable inside of a post method
@@ -43,88 +31,95 @@ app.use(flash());
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: false
+    cookie: { maxAge: oneDay },
+    saveUninitialized: true
 }));
-app.use(passport.initialize());
-app.use(passport.session());
+
 app.use(methodOverride('_method'));
 app.use(express.static(__dirname + '/public'));
 
 //routing setup for the application
-app.get('/', checkAuthenticated, (req, res) => {
-    res.render('index.ejs', {name: req.user.name});
+app.get('/', (req, res) => {
+    res.render('index.ejs');
 })
 
-app.get('/login', checkNotAuthenticated, (req, res) => {
+app.get('/login', (req, res) => {
     res.render('login.ejs');
 })
 
-app.get('/register', checkNotAuthenticated, (req, res) => {
+app.get('/register', (req, res) => {
     res.render('register.ejs');
 })
 
-app.post('/login', checkNotAuthenticated, passport.authenticate('local', {
-    successRedirect: '/',
-    failureRedirect: '/login',
-    failureFlash: true
-}))
+// POST LOGIN FOR AUTENTHICATION
+app.post('/login', async  function (req, res)  { 
+    console.log( "Invio:" + req.body.email);
+   
+    var email = req.body.email;
+    var password = req.body.password;
+  
+    
+    // CALL DOAUTHENTICATE FOR LOGIN
+    const rtn =  await dbcontext.doAuthenticate(email,password);
+    
 
-app.post('/register', checkNotAuthenticated, async (req, res) => {         //asyncronous function
+
+    if(rtn!=undefined)
+    {
+        let loggeduser = new loggedUser(rtn.ID,rtn.UserName,rtn.Email, rtn.Password);
+        req.session.user = loggeduser;
+        req.session.save();
+
+        console.log("Login Eseguito con successo");
+        req.flash('username', loggeduser.username);
+        res.redirect('/');
+    }
+    else 
+    {
+        console.log("Login fallito");
+        req.flash('error', "Bad username or password!!");
+        disconnect(req,res);
+        
+       
+    }
+ });    
+
+// POST FUNCTION FOR REGISTER A NEW USER
+app.post('/register', async function(req, res)  {         //asyncronous function
     try{
         console.log('entro in register');
-
-        dbcontext.GetUserFromEmail("pippo@pippop.it");
-
-         /*
-        const hashedPassword = await bcrypt.hash(req.body.password, 10);        //asyncronous hashing of password, 10 is a solid standard encryption value
-        const User = require('./userModel.js');
-
-        const newUser = new User({
-            name: req.body.name,
-            email: req.body.email,
-            password: hashedPassword,
-        });
-
-        newUser.save().then(() => console.log("Saved new user"));
-
        
-        users.push({
-            id: Date.now().toString(),      //automatically generated in a database
-            name: req.body.name,
-            email: req.body.email,
-            password: hashedPassword
-        })
-        */
-
-        res.redirect('/login');     //after complete registration, redirect to login page
+        var email = req.body.email;
+        var username = req.body.name;
+        var password = req.body.password;
+        const rtn =  await dbcontext.doRegister(username,email,password);
+        console.log(rtn);
+        if(rtn)
+            res.redirect('/login');     //after complete registration, redirect to login page
+        else 
+            res.redirect('/register');
     }catch{
         res.redirect('/register');      //redirects to register page in case of error
     }
-    //console.log(User);     //to see if user gets added
+   
 })
 
-//logout
+//LOGOUT
 app.delete('/logout', function(req, res, next){
-    req.logout(function(err){
-        if(err){return next(err);}
-        res.redirect('/');
-    });
+   
+        disconnect(req,res);
 });
 
-function checkAuthenticated(req, res, next)
+// SHARED FUNCTION TO DISCONNECT
+function disconnect(req,res)
 {
-    if(req.isAuthenticated()){
-        return next();
+    if(req!=undefined && req!=null){
+        req.session.user = null;
+        req.session.save();
+        req.flash('username', null);
+        res.redirect('/login');
     }
-    res.redirect('/login');
-}
-
-function checkNotAuthenticated(req, res, next)
-{
-    if(req.isAuthenticated()){
-        return res.redirect('/');
-    }
-    next();
+   
 }
 
 app.listen(3000);       //application running on port 3000
