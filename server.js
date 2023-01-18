@@ -35,14 +35,43 @@ app.use(session({
     saveUninitialized: true
 }));
 
+app.use(function (req, res, next) {
+    res.locals.username = req.session.username ;
+   
+    next();
+  });
+
 app.use(methodOverride('_method'));
 app.use(express.static(__dirname + '/public'));
 
 //routing setup for the application
-app.get('/', (req, res) => {
-    res.render('index.ejs');
+app.get('/index', (req, res) => {
+    if(req.session.user !=null || req.session.user !=undefined)
+        res.render('index.ejs');
+    else
+        res.render('login.ejs');
 })
+app.get('/', (req, res) => {
+    if(req.session.user !=null || req.session.user !=undefined)
 
+        res.render('lists.ejs');
+    else
+        res.render('login.ejs');
+})
+app.get('/lists',async  function (req, res) {
+    if(req.session.user !=null || req.session.user !=undefined)
+     {
+        console.log(req.session.iduser);
+        const rtn =  await dbcontext.GetUserLists(req.session.iduser);
+        console.log(rtn);
+        req.flash('allRows', rtn);
+       
+        res.render('lists.ejs');
+     }
+   
+    else
+        res.render('login.ejs');
+})
 app.get('/login', (req, res) => {
     res.render('login.ejs');
 })
@@ -68,11 +97,13 @@ app.post('/login', async  function (req, res)  {
     {
         let loggeduser = new loggedUser(rtn.ID,rtn.UserName,rtn.Email, rtn.Password);
         req.session.user = loggeduser;
+        req.session.username = loggeduser.username;
+        req.session.iduser = loggeduser.id;
         req.session.save();
 
         console.log("Login Eseguito con successo");
         req.flash('username', loggeduser.username);
-        res.redirect('/');
+        res.redirect('/lists');
     }
     else 
     {
@@ -103,6 +134,43 @@ app.post('/register', async function(req, res)  {         //asyncronous function
     }
    
 })
+// POST FUNCTION TO CREATE AN USER TODO LIST
+app.post('/createlists',async function(req, res, next){
+    console.log("entro");
+    var description = req.body.description;
+    var idUser =  req.session.iduser;
+    if(description!="")
+    {
+        console.log(description);
+        console.log(idUser);
+        const rtn =  await dbcontext.InsertUserList(description,idUser);
+        console.log(rtn);
+        const rtn1 =  await dbcontext.GetUserLists(req.session.iduser);
+        console.log(rtn1);
+        req.flash('allRows', rtn1);
+        res.render('lists.ejs');
+    }
+});
+
+// POST FUNCTION TO DELETE AN USER TODO LIST
+app.post('/deletelists',async function(req, res, next){
+    console.log("entro");
+    var IdItem = req.body.IdItem;
+   
+  
+        console.log(IdItem);
+        const rtn =  await dbcontext.DeleteUserList(IdItem);
+        console.log(rtn);
+
+        const rtn1 =  await dbcontext.GetUserLists(req.session.iduser);
+        console.log(rtn1);
+        req.flash('allRows', rtn1);
+        res.render('lists.ejs');
+  
+});
+
+
+
 
 //LOGOUT
 app.delete('/logout', function(req, res, next){

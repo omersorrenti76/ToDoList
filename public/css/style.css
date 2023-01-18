@@ -37,12 +37,24 @@ footer{
     margin-bottom: 10px;
 }
 
+.col-sm-12, col-md-6{
+    text-align: right!important;
+}
+.col-md-5{
+    text-align: left!important;
+}
 .top-text
 {
-    text-align: center;
+    text-align: left;
     margin-top: 20px;
+    margin-left: 20px;
 }
-
+.top-container
+{
+    
+    margin-right: 20px;
+    margin-left: 20px;
+}
 .input-group
 {
     margin-top: 50px;
