@@ -78,7 +78,10 @@
                     <th scope="col"></th>
                   </tr>
                 </thead>
-                <% for(let row of messages.allRows ){ %>
+                <%
+                if(messages.allRows!=null)
+                {
+                  for(let row of messages.allRows ){ %>
                     <tbody>
                         <tr style="cursor: pointer;">
                             <td><%= row.Id %></td>
@@ -88,7 +91,9 @@
                             <td><i onclick="DeleteItem(<%= row.Id %>)" class="fa fa-trash" aria-hidden="true"></i></td>
                         </tr>
                     </tbody>
-                    <% } %>
+                    <% }
+                } 
+                %>
               </table>
               
               

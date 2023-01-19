@@ -64,7 +64,10 @@ app.get('/lists',async  function (req, res) {
         console.log(req.session.iduser);
         const rtn =  await dbcontext.GetUserLists(req.session.iduser);
         console.log(rtn);
-        req.flash('allRows', rtn);
+        if (rtn.length > 0)
+            req.flash('allRows', rtn);
+        else
+            req.flash('allRows', null);
        
         res.render('lists.ejs');
      }
